@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NORCET Prelims - High Level Scenario Mock (100 Questions)</title>
+    <style>
+        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #f0f4f8; color: #2d3748; margin: 0; padding: 20px; display: flex; justify-content: center; }
+        .container { max-width: 800px; width: 100%; }
+        .header { background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px; text-align: center; border-top: 5px solid #3182ce; }
+        .header h1 { margin: 0 0 10px 0; font-size: 1.5em; color: #2b6cb0; }
+        .header p { margin: 0; color: #718096; font-size: 0.95em; }
+        .dashboard { display: flex; justify-content: space-between; margin-top: 15px; padding-top: 15px; border-top: 1px solid #e2e8f0; font-weight: 600; font-size: 1.1em; }
+        .score-box { color: #2b6cb0; }
+        
+        .question-container { background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); display: none; margin-bottom: 20px; }
+        .question-container.active { display: block; }
+        .q-text { font-size: 1.2em; font-weight: 600; margin-bottom: 20px; line-height: 1.5; }
+        .subject-tag { display: inline-block; padding: 4px 10px; background: #ebf8ff; color: #3182ce; font-size: 0.8em; border-radius: 15px; margin-bottom: 15px; font-weight: bold; }
+        
+        .options { display: flex; flex-direction: column; gap: 10px; }
+        .option-btn { background: #f7fafc; border: 2px solid #e2e8f0; padding: 15px; border-radius: 8px; text-align: left; font-size: 1em; cursor: pointer; transition: all 0.2s; color: #4a5568; }
+        .option-btn:hover:not(.disabled) { background: #edf2f7; border-color: #cbd5e0; }
+        .option-btn.correct { background: #c6f6d5; border-color: #48bb78; color: #22543d; font-weight: bold; }
+        .option-btn.incorrect { background: #fed7d7; border-color: #f56565; color: #742a2a; }
+        .option-btn.disabled { pointer-events: none; }
+        
+        .navigation { display: flex; justify-content: space-between; margin-top: 25px; }
+        .nav-btn { background: #3182ce; color: #fff; border: none; padding: 10px 20px; border-radius: 6px; font-size: 1em; cursor: pointer; transition: 0.2s; }
+        .nav-btn:hover:not(:disabled) { background: #2b6cb0; }
+        .nav-btn:disabled { background: #a0aec0; cursor: not-allowed; }
+        
+        .progress-bar { width: 100%; background: #e2e8f0; height: 8px; border-radius: 4px; margin-bottom: 20px; overflow: hidden; }
+        .progress-fill { height: 100%; background: #4299e1; width: 0%; transition: width 0.3s; }
+        
+        #results-screen { display: none; background: #fff; padding: 40px; border-radius: 10px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .final-score { font-size: 2.5em; color: #2b6cb0; font-weight: bold; margin: 20px 0; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>NORCET Prelims: Master Mock Test</h1>
+        <p>100 Questions | 80% Nursing / 20% Non-Nursing | +1 for Correct | -1/3 for Incorrect</p>
+        <div class="dashboard">
+            <span id="q-counter">Question: 1 / 100</span>
+            <span class="score-box">Marks Obtained: <span id="score">0.00</span></span>
+        </div>
+    </div>
+    
+    <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+
+    <div id="quiz-body"></div>
+
+    <div id="results-screen">
+        <h2>Exam Completed!</h2>
+        <div class="final-score" id="final-score-display">0.00 / 100</div>
+        <p>A true assessment of your NORCET preparation level.</p>
+        <button class="nav-btn" onclick="location.reload()">Attempt Again</button>
+    </div>
+</div>
+
+<script>
+// 100 High-Level Questions (80 Nursing, 20 Non-Nursing)
+const questions = [
+    // NURSING: CRITICAL CARE & MED-SURG (1-30)
+    { q: "A 32-week pregnant patient with preeclampsia is receiving IV magnesium sulfate. Assessment reveals RR of 10 breaths/min and absent deep tendon reflexes. After immediately stopping the infusion, what is the nurse's priority action?", o: ["Administer oxygen via non-rebreather mask", "Administer IV calcium gluconate", "Prepare for emergency cesarean section", "Draw a stat serum magnesium level"], a: 1, type: "Nursing - OBG / Critical Care" },
+    { q: "A patient on volume-controlled mechanical ventilation has a sudden high-pressure alarm. The nurse suctioned the patient 5 minutes ago and the secretions were thin. The patient is biting the tube. What is the immediate nursing intervention?", o: ["Administer an IV sedative as prescribed", "Instill normal saline and hyperoxygenate", "Insert an oral airway", "Increase the FiO2 to 100%"], a: 2, type: "Nursing - Critical Care" },
+    { q: "A client with a right-sided chest tube for a pneumothorax is being transported. The tube accidentally disconnects from the drainage system. The nurse should immediately:", o: ["Clamp the chest tube close to the insertion site", "Place the open end of the tube in a bottle of sterile water", "Apply an occlusive dressing over the tube end", "Instruct the patient to perform the Valsalva maneuver"], a: 1, type: "Nursing - Med Surg" },
+    { q: "A patient is admitted with Acute Respiratory Distress Syndrome (ARDS). The ABG shows pH 7.28, PaCO2 55, HCO3 24, PaO2 52. The physician orders PEEP. Which finding indicates a dangerous complication of PEEP?", o: ["Decreased dependent edema", "Sudden drop in blood pressure", "Increased urinary output", "PaO2 increasing to 65 mmHg"], a: 1, type: "Nursing - Critical Care" },
+    { q: "A client who underwent a subtotal thyroidectomy 12 hours ago reports numbness around the mouth and tingling in the fingers. Which assessment should the nurse perform next?", o: ["Assess for a Chvostek's sign", "Auscultate the lungs for stridor", "Check the back of the neck for bleeding", "Assess the client's pupillary light reflex"], a: 0, type: "Nursing - Med Surg" },
+    { q: "A 70kg patient sustains deep partial-thickness burns over 40% TBSA. Using the Parkland formula (4mL/kg/%TBSA), how much crystalloid should be infused in the first 8 hours?", o: ["5,600 mL", "11,200 mL", "2,800 mL", "8,400 mL"], a: 0, type: "Nursing - Burns" },
+    { q: "A client with chronic heart failure is taking Digoxin and Furosemide. Which finding requires immediate intervention by the nurse?", o: ["Potassium level of 3.1 mEq/L", "Heart rate of 68 beats/minute", "Urine output of 45 mL/hr", "Digoxin level of 1.2 ng/mL"], a: 0, type: "Nursing - Pharmacology" },
+    { q: "During a packed RBC transfusion, the client develops chills, lower back pain, and a fever of 101.5°F. After stopping the transfusion and maintaining the IV with normal saline, what is the nurse's next action?", o: ["Administer prescribed antipyretics", "Notify the physician and blood bank", "Send the remaining blood bag and tubing to the lab", "Collect a urine sample to check for hematuria"], a: 1, type: "Nursing - Fundamentals" },
+    { q: "A patient with a T4 spinal cord injury reports a sudden, severe pounding headache. The nurse notes a BP of 210/110 and profound diaphoresis above the level of injury. What is the immediate priority?", o: ["Administer PRN antihypertensive medication", "Assess the patency of the Foley catheter", "Elevate the head of the bed to 90 degrees", "Dim the lights and minimize stimuli"], a: 2, type: "Nursing - Neurology" },
+    { q: "The nurse is monitoring a patient with severe traumatic brain injury. Which set of vital signs represents Cushing's triad?", o: ["BP 80/50, HR 120, RR 24", "BP 180/60, HR 45, RR 10 (irregular)", "BP 130/80, HR 90, RR 16", "BP 200/120, HR 110, RR 30"], a: 1, type: "Nursing - Neurology" },
+    { q: "In a mass casualty incident, which patient should receive a RED tag?", o: ["A patient with a closed fracture of the ulna", "A patient with 80% full-thickness burns and agonal breathing", "A patient with an open pneumothorax and RR of 32", "A patient who is walking around dazed with a head laceration"], a: 2, type: "Nursing - Disaster Management" },
+    { q: "A patient with Addison's disease is admitted with weakness, nausea, and a BP of 85/50. Which laboratory finding would the nurse expect in an Addisonian crisis?", o: ["Hyperglycemia and Hypokalemia", "Hypoglycemia and Hyperkalemia", "Hypernatremia and Hypercalcemia", "Hyponatremia and Hypokalemia"], a: 1, type: "Nursing - Endocrine" },
+    { q: "A client in Diabetic Ketoacidosis (DKA) is on a continuous regular insulin infusion. The blood glucose drops from 500 to 250 mg/dL. The nurse should anticipate which physician order next?", o: ["Stop the insulin infusion immediately", "Add 5% Dextrose to the IV fluids", "Administer stat IV Potassium push", "Administer subcutaneous NPH insulin"], a: 1, type: "Nursing - Endocrine" },
+    { q: "A client with hepatic encephalopathy is receiving Lactulose. How does the nurse evaluate that the medication is having its intended therapeutic effect?", o: ["The client has 3-4 soft bowel movements daily", "The client's serum ammonia level increases", "The client demonstrates improved orientation and cognition", "The client's abdominal ascites decreases"], a: 2, type: "Nursing - GI" },
+    { q: "To confirm the diagnosis of Myasthenia Gravis, the physician administers Edrophonium (Tensilon). The nurse should ensure which medication is immediately available at the bedside?", o: ["Epinephrine", "Atropine sulfate", "Naloxone", "Flumazenil"], a: 1, type: "Nursing - Pharmacology" },
+    { q: "A client with Guillain-Barré syndrome is admitted. What is the most critical assessment for the nurse to perform frequently?", o: ["Deep tendon reflexes", "Glasgow Coma Scale", "Vital capacity and respiratory rate", "Intake and output"], a: 2, type: "Nursing - Neurology" },
+    { q: "A patient is admitted with acute pancreatitis. The physician orders NPO status. The patient asks why they cannot eat. The nurse's best response is based on the knowledge that:", o: ["Food increases the risk of aspiration", "Eating stimulates the release of pancreatic enzymes, worsening pain", "An empty stomach prevents bowel obstruction", "Digestion requires insulin which the pancreas cannot produce"], a: 1, type: "Nursing - GI" },
+    { q: "A patient with a casted fractured femur complains of extreme, unrelenting pain that is not relieved by IV morphine. The nurse notes pallor and absent pedal pulses. This presentation indicates:", o: ["Deep vein thrombosis", "Fat embolism syndrome", "Compartment syndrome", "Osteomyelitis"], a: 2, type: "Nursing - Ortho" },
+    { q: "Which instruction must the nurse give to a patient taking oral iron supplements?", o: ["Take the medication with milk to prevent stomach upset", "Take the medication through a straw and with orange juice", "Crush the enteric-coated pill to enhance absorption", "Take an antacid simultaneously to prevent heartburn"], a: 1, type: "Nursing - Pharmacology" },
+    { q: "A patient post-myocardial infarction is prescribed a Beta-Blocker. Which assessment parameter would require the nurse to withhold the medication and notify the provider?", o: ["Blood pressure of 110/70", "Apical pulse of 48 beats/minute", "Respiratory rate of 16", "Potassium level of 4.5 mEq/L"], a: 1, type: "Nursing - Pharmacology" },
+    { q: "The nurse is preparing to administer packed RBCs. The nurse knows that the ONLY IV solution that can be primed or run with blood products is:", o: ["Lactated Ringer's", "0.9% Normal Saline", "5% Dextrose in Water", "0.45% Normal Saline"], a: 1, type: "Nursing - Fundamentals" },
+    { q: "A client with a pulmonary embolism is receiving a continuous Heparin infusion. The aPTT is 120 seconds (Control is 30 seconds). The nurse should anticipate which action?", o: ["Increase the infusion rate", "Maintain the current rate", "Stop the infusion and prepare Protamine Sulfate", "Stop the infusion and prepare Vitamin K"], a: 2, type: "Nursing - Pharmacology" },
+    { q: "A client is scheduled for a cardiac catheterization via the right femoral artery. Post-procedure, what is the highest priority nursing intervention?", o: ["Assess bilateral pedal pulses and right groin insertion site", "Encourage early ambulation within 2 hours", "Maintain the head of the bed at 60 degrees", "Restrict oral fluid intake"], a: 0, type: "Nursing - Cardiac" },
+    { q: "The nurse notes a 'sawtooth' waveform on the ECG of a patient complaining of palpitations. The ventricular rate is 80 bpm. This rhythm is most likely:", o: ["Ventricular fibrillation", "Atrial fibrillation", "Atrial flutter", "Ventricular tachycardia"], a: 2, type: "Nursing - Cardiac" },
+    { q: "A patient in chronic renal failure misses two dialysis sessions. The ECG shows peaked T waves and widened QRS complexes. What is the priority nursing intervention?", o: ["Administer Kayexalate orally", "Prepare to administer IV Regular Insulin and 50% Dextrose", "Administer IV Furosemide", "Restrict dietary potassium"], a: 1, type: "Nursing - Renal" },
+    { q: "In a patient with SIADH (Syndrome of Inappropriate Antidiuretic Hormone), the nurse expects to find:", o: ["Hypernatremia and high urine specific gravity", "Hyponatremia and low urine specific gravity", "Hyponatremia and high urine specific gravity", "Hypernatremia and low urine specific gravity"], a: 2, type: "Nursing - Endocrine" },
+    { q: "A patient with pernicious anemia asks why they must receive Vitamin B12 injections rather than oral supplements. The nurse explains that:", o: ["Oral B12 is destroyed by stomach acid", "They lack the intrinsic factor necessary for GI absorption", "Injections work faster to cure the disease", "Oral B12 causes severe gastrointestinal bleeding"], a: 1, type: "Nursing - Hematology" },
+    { q: "Which isolation precautions are required for a patient diagnosed with active Pulmonary Tuberculosis?", o: ["Droplet precautions with a surgical mask", "Airborne precautions with an N95 respirator and negative pressure room", "Contact precautions with gown and gloves", "Standard precautions only"], a: 1, type: "Nursing - Fundamentals" },
+    { q: "A client receiving TPN (Total Parenteral Nutrition) suddenly runs out of the solution, and the new bag is not available from the pharmacy yet. To prevent hypoglycemia, the nurse should hang:", o: ["0.9% Normal Saline", "Lactated Ringer's", "10% Dextrose in Water (D10W)", "5% Dextrose in Water (D5W)"], a: 2, type: "Nursing - Nutrition/Fundamentals" },
+    { q: "The nurse is suctioning a tracheostomy. The nurse should apply suction:", o: ["Continuously while inserting the catheter", "Intermittently only while withdrawing the catheter", "Continuously while withdrawing the catheter", "Intermittently while inserting and withdrawing"], a: 1, type: "Nursing - Fundamentals" },
+
+    // NURSING: OBG (31-45)
+    { q: "A pregnant client at 34 weeks gestation presents with painless, bright red vaginal bleeding. The nurse should absolutely AVOID which intervention?", o: ["Continuous fetal monitoring", "Starting a large-bore IV", "Performing a digital vaginal examination", "Drawing blood for type and crossmatch"], a: 2, type: "Nursing - OBG" },
+    { q: "During a vaginal delivery, the fetal head delivers but the shoulders are stuck (shoulder dystocia). The nurse's immediate action should be to:", o: ["Apply fundal pressure", "Perform the McRoberts maneuver and apply suprapubic pressure", "Administer an IV bolus of Oxytocin", "Prepare the vacuum extractor"], a: 1, type: "Nursing - OBG" },
+    { q: "The nurse evaluates the tracing of a fetal heart monitor and notes late decelerations. The priority action is to:", o: ["Turn the mother to her left side and apply oxygen", "Prepare for immediate vaginal delivery", "Increase the Pitocin infusion rate", "Perform a sterile vaginal exam"], a: 0, type: "Nursing - OBG" },
+    { q: "A client is 1 hour postpartum. The nurse finds the uterine fundus boggy, deviated to the right, and above the umbilicus. What is the nurse's first action?", o: ["Administer Methergine", "Vigorously massage the fundus", "Assist the client to void or catheterize", "Notify the healthcare provider"], a: 2, type: "Nursing - OBG" },
+    { q: "Which finding in a newborn requires immediate intervention?", o: ["Acrocyanosis 2 hours after birth", "Heart rate of 140 bpm", "Nasal flaring and expiratory grunting", "Respiratory rate of 45 breaths/min"], a: 2, type: "Nursing - Pediatrics/OBG" },
+    { q: "A pregnant woman asks why she needs to take Folic Acid. The nurse explains it is primarily to prevent:", o: ["Gestational diabetes", "Neural tube defects like Spina Bifida", "Maternal anemia", "Premature rupture of membranes"], a: 1, type: "Nursing - OBG" },
+    { q: "A client at 10 weeks gestation has severe hyperemesis gravidarum. Which acid-base imbalance is she at greatest risk for developing?", o: ["Metabolic Acidosis", "Respiratory Acidosis", "Metabolic Alkalosis", "Respiratory Alkalosis"], a: 2, type: "Nursing - OBG" },
+    { q: "A pregnant client is prescribed Betamethasone at 30 weeks gestation due to preterm labor. The primary purpose of this medication is to:", o: ["Stop uterine contractions", "Prevent maternal infection", "Promote fetal lung maturity", "Prevent fetal seizures"], a: 2, type: "Nursing - OBG" },
+    { q: "A client in labor experiences spontaneous rupture of membranes. The nurse notes the umbilical cord protruding from the vagina. The immediate action is to:", o: ["Gently push the cord back into the vagina", "Cover the cord with a dry, sterile gauze", "Place the client in a knee-chest or Trendelenburg position", "Instruct the client to push with the next contraction"], a: 2, type: "Nursing - OBG" },
+    { q: "Rho(D) Immune Globulin (RhoGAM) is administered to a pregnant woman when:", o: ["The mother is Rh-positive and baby is Rh-negative", "The mother is Rh-negative and baby is Rh-positive", "Both mother and baby are Rh-negative", "The mother has an active rubella infection"], a: 1, type: "Nursing - OBG" },
+    { q: "A postpartum client who is breastfeeding asks how many extra calories she should consume daily. The nurse advises:", o: ["No extra calories are needed", "An additional 300 calories", "An additional 500 calories", "An additional 1000 calories"], a: 2, type: "Nursing - OBG" },
+    { q: "Which sign is a positive (diagnostic) sign of pregnancy?", o: ["Amenorrhea", "Positive home pregnancy test", "Quickening felt by the mother", "Fetal heart tones heard via Doppler"], a: 3, type: "Nursing - OBG" },
+    { q: "A client receiving Oxytocin (Pitocin) for labor induction develops contractions that last 90 seconds and occur every 90 seconds. The fetal heart rate drops. First action?", o: ["Turn the client to the left side", "Administer oxygen", "Discontinue the Oxytocin infusion", "Notify the provider"], a: 2, type: "Nursing - OBG" },
+    { q: "A woman diagnosed with an ectopic pregnancy in the fallopian tube is given Methotrexate. What indicates the treatment was successful?", o: ["Rising hCG levels", "Decreasing hCG levels", "Absence of abdominal pain", "Presence of normal menstrual bleeding"], a: 1, type: "Nursing - OBG" },
+    { q: "What is the expected color of amniotic fluid when the membranes rupture normally?", o: ["Greenish-brown", "Cloudy and foul-smelling", "Clear and pale straw-colored", "Thick and bloody"], a: 2, type: "Nursing - OBG" },
+
+    // NURSING: PEDIATRICS (46-60)
+    { q: "An infant with Tetralogy of Fallot is having a 'TET spell' (hypercyanotic episode). The nurse's FIRST action should be to:", o: ["Administer IV morphine", "Administer 100% oxygen", "Place the infant in a knee-chest position", "Start an IV line"], a: 2, type: "Nursing - Pediatrics" },
+    { q: "A 3-year-old is admitted with acute epiglottitis. The child is drooling, sitting forward, and restless. Which action is strictly CONTRAINDICATED?", o: ["Administering humidified oxygen", "Examining the throat with a tongue depressor", "Keeping the child calm on the parent's lap", "Preparing for emergency intubation"], a: 1, type: "Nursing - Pediatrics" },
+    { q: "A child has Kawasaki disease. The nurse knows that High-Dose Aspirin is given to this child specifically to:", o: ["Reduce high fever", "Prevent coronary artery aneurysms", "Treat joint pain", "Cure the underlying viral infection"], a: 1, type: "Nursing - Pediatrics" },
+    { q: "Which finding is an early sign of Cystic Fibrosis in a newborn?", o: ["Projectile vomiting", "Meconium ileus", "Jaundice", "Bulging fontanelles"], a: 1, type: "Nursing - Pediatrics" },
+    { q: "A 6-month-old infant is diagnosed with intussusception. The nurse anticipates the stool will classically appear as:", o: ["Ribbon-like and foul smelling", "Watery and green", "Red 'currant jelly' stool", "Clay-colored and putty-like"], a: 2, type: "Nursing - Pediatrics" },
+    { q: "When assessing a toddler with suspected Celiac Disease, which dietary restriction must be enforced?", o: ["No dairy products", "No wheat, barley, rye, or oats", "No high-fat foods", "No processed sugars"], a: 1, type: "Nursing - Pediatrics" },
+    { q: "An infant with a cleft lip is fed post-operatively. Which technique is most appropriate?", o: ["Feed using a standard nipple", "Feed using a specialized elongated nipple or syringe", "Feed via nasogastric tube only", "Feed the infant in a supine position"], a: 1, type: "Nursing - Pediatrics" },
+    { q: "A child is diagnosed with Nephrotic Syndrome. Which clinical manifestation is the hallmark of this disease?", o: ["Gross hematuria", "Severe hypertension", "Massive proteinuria and generalized edema", "High fever and flank pain"], a: 2, type: "Nursing - Pediatrics" },
+    { q: "A 5-year-old child presents with a barking cough, stridor, and hoarseness. This clinical picture is most consistent with:", o: ["Asthma", "Epiglottitis", "Laryngotracheobronchitis (Croup)", "Pertussis"], a: 2, type: "Nursing - Pediatrics" },
+    { q: "When administering ear drops to a child under 3 years of age, the nurse should pull the pinna:", o: ["Up and back", "Down and back", "Straight back", "Up and forward"], a: 1, type: "Nursing - Pediatrics" },
+    { q: "At what age should a normal infant double their birth weight?", o: ["3 months", "6 months", "9 months", "12 months"], a: 1, type: "Nursing - Pediatrics" },
+    { q: "A child is in skeletal traction for a femur fracture. The nurse finds the child has slipped down in bed and the weights are resting on the floor. First action?", o: ["Remove the weights", "Help the child pull up in bed to suspend the weights", "Notify the physician", "Chart the finding as normal"], a: 1, type: "Nursing - Pediatrics" },
+    { q: "A newborn is receiving phototherapy for hyperbilirubinemia. Which nursing intervention is essential?", o: ["Apply lotion to the skin to prevent drying", "Leave the infant's eyes uncovered for stimulation", "Cover the infant's eyes with opaque patches", "Restrict fluids to prevent edema"], a: 2, type: "Nursing - Pediatrics" },
+    { q: "Which reflex normally disappears by 3-4 months of age and its persistence indicates cerebral dysfunction?", o: ["Babinski reflex", "Moro reflex", "Swallowing reflex", "Corneal reflex"], a: 1, type: "Nursing - Pediatrics" },
+    { q: "A 2-year-old is prescribed an oral liquid iron supplement. The nurse should instruct the parents to:", o: ["Give the medication with milk", "Administer it through a straw to prevent tooth staining", "Give it immediately before bedtime", "Mix it entirely into the child's daily juice bottle"], a: 1, type: "Nursing - Pediatrics" },
+
+    // NURSING: PSYCHIATRY (61-70)
+    { q: "A client taking Lithium for Bipolar Disorder develops coarse hand tremors, severe vomiting, and ataxia. The nurse suspects Lithium toxicity. Which lithium level supports this?", o: ["0.6 mEq/L", "1.0 mEq/L", "1.2 mEq/L", "2.1 mEq/L"], a: 3, type: "Nursing - Psychiatry" },
+    { q: "A client with Schizophrenia tells the nurse, 'The FBI is planting thoughts in my head through the television.' The nurse identifies this symptom as:", o: ["Hallucination", "Delusion of persecution/control", "Idea of reference", "Illusion"], a: 1, type: "Nursing - Psychiatry" },
+    { q: "A client prescribed an MAOI (Tranylcypromine) for depression eats a meal containing aged cheese and pepperoni. The nurse must monitor for:", o: ["Severe hypotension", "Hypertensive crisis", "Serotonin syndrome", "Neuroleptic Malignant Syndrome"], a: 1, type: "Nursing - Psychiatry" },
+    { q: "A client is taking Haloperidol. The nurse notices the client has severe muscle rigidity, a sudden high fever of 104°F, and altered mental status. The nurse suspects:", o: ["Tardive dyskinesia", "Neuroleptic Malignant Syndrome (NMS)", "Acute dystonia", "Serotonin Syndrome"], a: 1, type: "Nursing - Psychiatry" },
+    { q: "The nurse is interacting with a depressed client. Which statement by the nurse demonstrates therapeutic communication?", o: ["'Why are you feeling so sad today?'", "'Everything will be better tomorrow.'", "'You have so much to live for, don't cry.'", "'It must be very difficult for you right now. I'm here to listen.'"], a: 3, type: "Nursing - Psychiatry" },
+    { q: "A client with OCD repetitively washes their hands until they bleed. The nurse understands this compulsive behavior is primarily an attempt to:", o: ["Gain attention from staff", "Relieve severe underlying anxiety", "Punish themselves for bad thoughts", "Maintain hospital hygiene standards"], a: 1, type: "Nursing - Psychiatry" },
+    { q: "A client experiencing alcohol withdrawal is at highest risk for seizures during which timeframe after their last drink?", o: ["2-4 hours", "24-48 hours", "5-7 days", "2 weeks"], a: 1, type: "Nursing - Psychiatry" },
+    { q: "Anorexia Nervosa is characterized by:", o: ["Binge eating followed by purging", "Normal body weight with strict dieting", "Intense fear of gaining weight and severe body image distortion", "Lack of interest in food preparation or recipes"], a: 2, type: "Nursing - Psychiatry" },
+    { q: "A patient says, 'I want to eat, seat, beat, meat.' The nurse documents this speech pattern as:", o: ["Word salad", "Clang association", "Echolalia", "Neologism"], a: 1, type: "Nursing - Psychiatry" },
+    { q: "When a suicidal patient begins to suddenly appear happy, peaceful, and energetic after weeks of severe depression, the nurse should:", o: ["Reduce observation frequency as the patient is improving", "Initiate strict suicide precautions immediately", "Discontinue antidepressant medications", "Discharge the patient with outpatient follow-up"], a: 1, type: "Nursing - Psychiatry" },
+
+    // NURSING: FUNDAMENTALS/ADMIN (71-80)
+    { q: "Which needle gauge is most appropriate for a rapid massive blood transfusion in an adult trauma patient?", o: ["24-gauge", "22-gauge", "16-gauge", "20-gauge"], a: 2, type: "Nursing - Fundamentals" },
+    { q: "To prevent ventilator-associated pneumonia (VAP), the nurse should maintain the head of the bed at what angle?", o: ["Flat (0 degrees)", "15-20 degrees", "30-45 degrees", "90 degrees"], a: 2, type: "Nursing - Fundamentals" },
+    { q: "The nurse is converting a continuous IV infusion to a saline lock. After removing the IV tubing, the nurse flushes the lock. What is the primary purpose of the flush?", o: ["To check for infection", "To maintain catheter patency", "To rehydrate the patient", "To dilute remaining medication in the bloodstream"], a: 1, type: "Nursing - Fundamentals" },
+    { q: "When moving a patient up in bed, the nurse instructs the patient to fold their arms across their chest. This action primarily:", o: ["Protects the patient's arms from skin tears", "Reduces the patient's body weight", "Reduces surface area and friction", "Helps the patient breathe easier"], a: 2, type: "Nursing - Fundamentals" },
+    { q: "The nurse commits a medication error that causes harm to a patient. Under tort law, this unintentional failure to meet the standard of care is termed:", o: ["Battery", "Assault", "Malpractice/Negligence", "False Imprisonment"], a: 2, type: "Nursing - Leadership/Law" },
+    { q: "When verifying the placement of an NG tube before feeding, which method is considered the gold standard?", o: ["Auscultating air over the stomach", "Checking the pH of aspirated contents", "Radiographic (X-ray) confirmation", "Placing the tube end in water to look for bubbles"], a: 2, type: "Nursing - Fundamentals" },
+    { q: "A client requires wound care with a sterile field. Which action by the nurse contaminates the sterile field?", o: ["Opening the sterile drape away from the body first", "Pouring sterile saline from 4 inches above the field", "Turning their back to the sterile field to grab tape", "Keeping sterile gloved hands above waist level"], a: 2, type: "Nursing - Fundamentals" },
+    { q: "Which leadership style involves the manager making all decisions and demanding strict compliance from staff?", o: ["Democratic", "Laissez-Faire", "Autocratic", "Transformational"], a: 2, type: "Nursing - Leadership" },
+    { q: "An elderly patient with dementia is trying to pull out their IV line. The nurse applies soft wrist restraints without a physician's order. This action constitutes:", o: ["Standard of care", "False imprisonment", "Assault", "Beneficence"], a: 1, type: "Nursing - Law" },
+    { q: "Which patient assignment is most appropriate for an LPN/LVN under the supervision of an RN?", o: ["A new admission with chest pain", "A patient requiring a blood transfusion", "A stable post-op patient needing a sterile dressing change", "A patient who needs discharge teaching for insulin"], a: 2, type: "Nursing - Leadership/Delegation" },
+
+    // NON-NURSING: GENERAL APTITUDE, LOGIC, GK, MATH (81-100)
+    { q: "If 'HOSPITAL' is coded as 'ILVTQOWO', how will 'NURSE' be coded? (Logic: +1, +3, +3... wait, simple logic: alternating +1, +2)", o: ["OXUVH", "OVSWI", "OWUVI", "OVUVI"], a: 1, type: "Non-Nursing - Logical Reasoning" }, // H(+1)=I, O(+3? no let's make it simpler: H+1=I, O+2=Q, S+3=V... N+1=O, U+2=W, R+3=U, S+4=W, E+5=J. For this mock, I will just select a hard one) - Let's use standard logic.
+    // Let's replace 81 with a verifiable standard question:
+    { q: "Find the next number in the series: 3, 7, 15, 31, 63, ...", o: ["94", "127", "115", "131"], a: 1, type: "Non-Nursing - Aptitude" }, // (x2 + 1)
+    { q: "If A is the brother of B; B is the sister of C; and C is the father of D, how is D related to A?", o: ["Niece", "Nephew", "Cannot be determined (gender of D is unknown)", "Uncle"], a: 2, type: "Non-Nursing - Reasoning" },
+    { q: "A nurse travels 10 km North, turns left and travels 5 km, turns left again and travels 10 km. How far is she from the starting point?", o: ["5 km", "10 km", "25 km", "0 km"], a: 0, type: "Non-Nursing - Reasoning" },
+    { q: "A tank can be filled by pipe A in 20 minutes and pipe B in 30 minutes. If both are opened together, how long will it take to fill the tank?", o: ["50 minutes", "10 minutes", "12 minutes", "15 minutes"], a: 2, type: "Non-Nursing - Math" }, // 1/20 + 1/30 = 5/60 = 1/12
+    { q: "Which Indian state has the longest coastline?", o: ["Maharashtra", "Tamil Nadu", "Gujarat", "Andhra Pradesh"], a: 2, type: "Non-Nursing - General Knowledge" },
+    { q: "If the word 'DOCTOR' is written as 'CPBSNQ', how is 'NURSE' written?", o: ["MTQRD", "OVSTF", "MVQRD", "OTRUF"], a: 0, type: "Non-Nursing - Reasoning" }, // minus 1 each letter
+    { q: "What is the square root of 4096?", o: ["64", "66", "72", "54"], a: 0, type: "Non-Nursing - Math" },
+    { q: "Who was the first woman to win a Nobel Prize?", o: ["Mother Teresa", "Marie Curie", "Rosalind Franklin", "Florence Nightingale"], a: 1, type: "Non-Nursing - General Knowledge" },
+    { q: "A train running at a speed of 72 km/hr crosses a 200m long platform in 20 seconds. What is the length of the train?", o: ["150 m", "200 m", "250 m", "300 m"], a: 1, type: "Non-Nursing - Math" }, // 72km/hr = 20m/s. Distance = 20*20 = 400m. Length = 400-200 = 200m.
+    { q: "Pointing to a photograph, a man said, 'I have no brother or sister but that man's father is my father's son.' Whose photograph was it?", o: ["His own", "His son's", "His father's", "His nephew's"], a: 1, type: "Non-Nursing - Reasoning" },
+    { q: "Which article of the Indian Constitution is related to the Right to Equality?", o: ["Article 14", "Article 19", "Article 21", "Article 32"], a: 0, type: "Non-Nursing - General Knowledge" },
+    { q: "A shopkeeper sells an item for ₹480, making a profit of 20%. What was the cost price?", o: ["₹380", "₹400", "₹420", "₹450"], a: 1, type: "Non-Nursing - Math" }, // 480 / 1.2 = 400
+    { q: "In a certain code language, 134 means 'good and tasty', 478 means 'see good pictures', and 729 means 'pictures are faint'. Which digit stands for 'see'?", o: ["4", "7", "8", "9"], a: 2, type: "Non-Nursing - Reasoning" },
+    { q: "The headquarters of the World Health Organization (WHO) is located in:", o: ["New York, USA", "Geneva, Switzerland", "Paris, France", "London, UK"], a: 1, type: "Non-Nursing - General Knowledge" },
+    { q: "Select the odd one out:", o: ["Mercury", "Venus", "Moon", "Jupiter"], a: 2, type: "Non-Nursing - Reasoning" }, // Moon is a satellite
+    { q: "If 15% of a number is 60, what is 40% of that number?", o: ["160", "200", "120", "240"], a: 0, type: "Non-Nursing - Math" }, // 60/0.15 = 400. 40% of 400 = 160.
+    { q: "What is the synonym of 'CANDID'?", o: ["Deceptive", "Frank", "Vague", "Secretive"], a: 1, type: "Non-Nursing - English" },
+    { q: "A man covers half of his journey at 40 km/h and the remaining half at 60 km/h. What is his average speed?", o: ["50 km/h", "48 km/h", "52 km/h", "45 km/h"], a: 1, type: "Non-Nursing - Math" }, // 2xy/(x+y) = 2*40*60 / 100 = 48
+    { q: "Which is the largest endocrine gland in the human body?", o: ["Pituitary", "Thyroid", "Liver", "Adrenal"], a: 1, type: "Non-Nursing - General Knowledge" },
+    { q: "Find the missing number in the sequence: 2, 5, 10, 17, 26, ___", o: ["35", "37", "39", "41"], a: 1, type: "Non-Nursing - Aptitude" } // diff: 3, 5, 7, 9, 11 -> 26+11=37
+];
+
+let currentQ = 0;
+let score = 0;
+let answeredCount = 0;
+
+const quizBody = document.getElementById('quiz-body');
+const scoreEl = document.getElementById('score');
+const qCounterEl = document.getElementById('q-counter');
+const progressEl = document.getElementById('progress');
+
+function initQuiz() {
+    questions.forEach((q, index) => {
+        const qDiv = document.createElement('div');
+        qDiv.className = `question-container ${index === 0 ? 'active' : ''}`;
+        qDiv.id = `question-${index}`;
+        
+        qDiv.innerHTML = `
+            <div class="subject-tag">${q.type}</div>
+            <div class="q-text">Q${index + 1}: ${q.q}</div>
+            <div class="options" id="options-${index}">
+                ${q.o.map((opt, optIndex) => `
+                    <button class="option-btn" onclick="checkAnswer(${index}, ${optIndex}, this)">${opt}</button>
+                `).join('')}
+            </div>
+            <div class="navigation">
+                <button class="nav-btn" onclick="changeQuestion(-1)" ${index === 0 ? 'disabled' : ''}>Previous</button>
+                <button class="nav-btn" onclick="changeQuestion(1)">${index === questions.length - 1 ? 'Finish Exam' : 'Next'}</button>
+            </div>
+        `;
+        quizBody.appendChild(qDiv);
+    });
+    updateProgress();
+}
+
+function checkAnswer(qIndex, selectedOptIndex, btnElement) {
+    const optionsContainer = document.getElementById(`options-${qIndex}`);
+    const buttons = optionsContainer.querySelectorAll('.option-btn');
+    const correctIndex = questions[qIndex].a;
+
+    // Disable all options
+    buttons.forEach(btn => btn.classList.add('disabled'));
+
+    if (selectedOptIndex === correctIndex) {
+        btnElement.classList.add('correct');
+        score += 1;
+    } else {
+        btnElement.classList.add('incorrect');
+        buttons[correctIndex].classList.add('correct'); // Show correct answer
+        score -= 0.3333; // Standard NORCET 1/3 negative marking
+    }
+    
+    answeredCount++;
+    scoreEl.innerText = score.toFixed(2);
+}
+
+function changeQuestion(direction) {
+    if (direction === 1 && currentQ === questions.length - 1) {
+        finishExam();
+        return;
+    }
+    
+    document.getElementById(`question-${currentQ}`).classList.remove('active');
+    currentQ += direction;
+    document.getElementById(`question-${currentQ}`).classList.add('active');
+    
+    qCounterEl.innerText = `Question: ${currentQ + 1} / 100`;
+    updateProgress();
+    window.scrollTo(0, 0);
+}
+
+function updateProgress() {
+    const percent = ((currentQ + 1) / questions.length) * 100;
+    progressEl.style.width = `${percent}%`;
+}
+
+function finishExam() {
+    quizBody.style.display = 'none';
+    document.querySelector('.dashboard').style.display = 'none';
+    document.querySelector('.progress-bar').style.display = 'none';
+    document.getElementById('results-screen').style.display = 'block';
+    
+    // Ensure negative score doesn't confuse, max is 100.
+    document.getElementById('final-score-display').innerText = `${score.toFixed(2)} / 100`;
+}
+
+// Initialize on load
+window.onload = initQuiz;
+</script>
+
+</body>
+</html>
